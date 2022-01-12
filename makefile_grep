@@ -1,0 +1,31 @@
+CC=gcc -std=c11
+LFLAGS=-Wall -Werror -Wextra
+CHECK_FLAGS=
+TEST_FLAG=
+# TEST_FLAG=-fsanitize=address
+
+OS=$(shell uname)
+ifeq ($(OS), Linux)
+	CHECK_FLAGS=-lcheck -pthread -lrt -lm -lsubunit
+else
+	CHECK_FLAGS=-lcheck
+endif
+
+rebuild: clean all
+all: s21_grep test
+
+s21_grep: s21_grep.c
+	$(CC) $(TEST_FLAG) s21_grep.c -o s21_grep
+
+test: s21_grep
+	$(CC) $(LFLAGS) test_grep.c -o test $(CHECK_FLAGS)
+	./test
+
+clean:
+	rm -rf *.o *.out s21_grep test
+
+leaks: test
+	CK_FORK=no leaks --atExit -- ./test
+
+check:
+	python3 ../../materials/linters/cpplint.py --extensions=c ./*.c
