@@ -12,20 +12,23 @@ else
 endif
 
 rebuild: clean all
-all: s21_cat test
+all: s21_cat s21_grep test
 
-s21_cat: s21_cat.c
-	$(CC) $(LFLAGS) $(TEST_FLAG) s21_cat.c -o s21_cat
+s21_cat:
+	$(CC) $(LFLAGS) cat/s21_cat.c -o cat/a.out
 
-test: s21_cat
-	$(CC) $(LFLAGS) test_cat.c -o test $(CHECK_FLAGS)
+s21_grep:
+	$(CC) $(LFLAGS) grep/s21_grep.c -o grep/a.out
+
+test: s21_cat s21_grep
+	sh test.sh -o s21_cat
+	$(CC) $(LFLAGS) test.c -o test $(CHECK_FLAGS)
 	./test
 
 clean:
-	rm -rf *.o *.out s21_cat test
+	rm -rf *.o *.out *.txt s21_cat test
 
 leaks: test
+	CK_FORK=no leaks --atExit -- /Users/estaedmo/C3_SimpleBashUtils-0/src/grep/./a.out
+	CK_FORK=no leaks --atExit -- /Users/estaedmo/C3_SimpleBashUtils-0/src/cat/./a.out
 	CK_FORK=no leaks --atExit -- ./test
-
-check:
-	python3 ../../materials/linters/cpplint.py --extensions=c ./*.c
