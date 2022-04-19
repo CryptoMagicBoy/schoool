@@ -1,3 +1,0 @@
-8 Mbps = 1 MB/s
-100 MB/s = 800000 Kbps
-1Gbps = 1000 Mbps
