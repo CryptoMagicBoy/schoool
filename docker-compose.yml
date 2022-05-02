@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  mini_web_server:
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    container_name: mini_web_server
+    tty: true
+    networks:
+      - main
+
+  my_server:
+    build:
+      context: ./my_server
+      dockerfile: Dockerfile3
+    ports:
+      - "80:8080"
+    tty: true
+    depends_on:
+      - mini_web_server
+    networks:
+      - main
+
+networks:
+  main:
