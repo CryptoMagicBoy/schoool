@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo HOSTNAME = $(hostname)
+echo TIMEZONE = $(cat /etc/timezone) UTC $(date +%Z)
+echo USER = $(whoami)
+echo OS = $(hostnamectl | grep "Operating System" | awk '{print $3,$4,$5}')
+echo DATE = $(date -u | awk '{print $2,$3,$4,$5}')
+echo UPTIME = $(uptime -p | awk '{print $2,$3,$4,$5}')
+echo UPTIME_SEC = $(cat /proc/uptime | awk '{print int ($1), "sec"}')
+echo IP = $(hostname -I)
+echo MASK = $(ifconfig | grep "broadcast" | awk '{print $4}')
+echo GATEWAY = $(route -n | grep 'UG' | awk '{print $2}')
+echo RAM_TOTAL = $(free -m | awk '/Память:/{printf "%.3f GB", $2/1024}')
+echo RAM_USER = $(free -m | awk '/Память:/{printf "%.3f GB", $3/1024}')
+echo RAM_FREE = $(free -m | awk '/Память:/{printf "%.3f GB", $4/1024}')
+echo SPACE_ROOT = $(df /root -k | grep "/dev" | awk '{printf "%.2f MB", $2/1024}')
+echo SPACE_ROOT_USED = $(df /root -k | grep "/dev" | awk '{printf "%.2f MB", $3/1024}')
+echo SPACE_ROOT_FREE = $(df /root -k | grep "/dev" | awk '{printf "%.2f MB", $4/1024}')
