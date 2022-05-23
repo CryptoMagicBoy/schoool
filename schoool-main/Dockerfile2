@@ -1,0 +1,38 @@
+FROM nginx
+
+COPY ./server/mini_web_server.c /mini_web_server/
+COPY ./server/part4.sh /mini_web_server/
+COPY ./server/nginx/nginx.conf /etc/nginx/nginx.conf
+
+RUN apt-get update ; \
+    apt-get install -y gcc  \
+    make \
+    spawn-fcgi \
+    libfcgi-dev ; \
+    /etc/init.d/nginx start ; \
+    useradd -d /home/estaedmo/ -m -s /bin/bash estaedmo ; \
+    chown -R estaedmo:estaedmo /mini_web_server && chmod -R 755 /mini_web_server ; \
+    chown -R estaedmo:estaedmo /etc/nginx/conf.d ; \
+    touch /var/run/nginx.pid ; \
+    chown -R estaedmo:estaedmo /var/run/nginx.pid ; \ 
+    chmod u-s usr/bin/gpasswd ; \
+    chmod g-s usr/bin/wall ; \
+    chmod u-s usr/bin/newgrp ; \
+    chmod u-s bin/su ; \
+    chmod u-s usr/bin/chfn ; \
+    chmod u-s usr/bin/passwd ; \
+    chmod u-s bin/mount ; \
+    chmod u-s bin/umount ; \
+    chmod g-s usr/bin/chage ; \
+    chmod u-s usr/bin/chsh ; \
+    chmod g-s usr/bin/expiry ; \
+    chmod g-s sbin/unix_chkpwd ; \
+    rm -rf /var/lib/apt/lists
+
+USER estaedmo
+
+WORKDIR /mini_web_server/
+
+ENTRYPOINT [ "./part4.sh" ]
+
+HEALTHCHECK --timeout=30s --retries=3 CMD curl -f localhost:81/
