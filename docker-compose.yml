@@ -1,26 +1,22 @@
 version: "3"
 
 services:
-  mini_web_server:
+  servak:
     build:
       context: .
       dockerfile: Dockerfile2
-    container_name: mini_web_server
+    container_name: my_dock
     tty: true
-    networks:
-      - main
-
-  my_server:
-    build:
-      context: ./my_server
-      dockerfile: Dockerfile3
+    
+  nginx_server:
+    image: nginx
+    volumes:
+     - ./nginx.conf:/etc/nginx/nginx.conf
+     - ./aboba.sh:/aboba.sh
     ports:
-      - "80:8080"
-    tty: true
+     - "80:8080"
     depends_on:
-      - mini_web_server
-    networks:
-      - main
-
-networks:
-  main:
+     - servak
+    container_name: nginx_server
+    tty: true
+    command: ["./aboba.sh"]
