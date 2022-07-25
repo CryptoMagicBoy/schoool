@@ -3,14 +3,15 @@
 #include <string.h>
 #include <time.h>
 
-int random_number(int min_num, int max_num);
-void create_random_ip(char *ip_string);
-void create_random_url(char *url);
-void create_random_useragent(char *useragent);
-int get_random_status();
-void get_random_method(char *method);
-void format_time(char *datetime, int log_index);
-void month_to_string(char *string, int index);
+void log_time(char *date, int index);
+int random_ch(int min, int max);
+void create_ip(char *ip);
+int gen_status();
+void choose_method(char *method);
+void create_url(char *url);
+void create_agent(char *agent);
+void month_to_stroka(char *stroka, int check);
+
 
 const int status_codes[10] = {
     200, // OK - "Успешно". Запрос успешно обработан
@@ -24,4 +25,3 @@ const int status_codes[10] = {
     502, // Bad Gateway - "Плохой шлюз". Эта ошибка означает что сервер, во время работы в качестве шлюза для получения ответа, нужного для обработки запроса, получил недействительный (недопустимый) ответ. 
     503  // Service Unavailable - "Сервис недоступен". Сервер не готов обрабатывать запрос. Зачастую причинами являются отключение сервера или то, что он перегружен.
 };
-
