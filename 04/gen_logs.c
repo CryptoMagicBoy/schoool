@@ -1,22 +1,22 @@
 #include "gen_logs.h"
 
 int main() {
-    char ip[BUFSIZ], method[BUFSIZ], url[BUFSIZ], useragent[BUFSIZ], datetime[BUFSIZ];
-    int status = 0, log_index = 0, bytes = 0;
-    for (; log_index < 5; log_index++) {
-        char file_name[BUFSIZ];
-        sprintf(file_name, "%s_%d.log", "log", log_index);
-        FILE *file = fopen(file_name, "w");
-        int max = random_number(100, 1000);
-        for (int i = 0; i < max; i++) {
-            create_random_useragent(useragent);
-            create_random_url(url);
-            create_random_ip(ip);
-            format_time(datetime, log_index);
-            status = get_random_status();
-            get_random_method(method);
-            bytes = random_number(10, 10000);
-            fprintf(file, "%s - username %s \"%s %s\" %d %d \"-\" \"%s\"\n", ip, datetime, method, url, status, bytes, useragent);
+    char ip[BUFSIZ], method[BUFSIZ], url[BUFSIZ], agent[BUFSIZ], date[BUFSIZ];
+    int status = 0, index = 0, k_bytes = 0;
+    for (; index < 5; ++index) {
+        char filename[BUFSIZ];
+        sprintf(filename, "%s_%d.log", "log", index);
+        FILE *file = fopen(filename, "w");
+        int n = random_ch(100, 1000);
+        for (int i = 0; i < n; ++i) {
+            create_agent(agent);
+            create_url(url);
+            create_ip(ip);
+            log_time(date, index);
+            status = gen_status();
+            choose_method(method);
+            k_bytes = random_ch(10, 10000);
+            fprintf(file, "%s - username %s \"%s %s\" %d %d \"-\" \"%s\"\n", ip, date, method, url, status, k_bytes, agent);
         }
         fclose(file);
     }
@@ -24,115 +24,115 @@ int main() {
     return 0;
 }
 
-void format_time(char *datetime, int log_index) {
+void log_time(char *date, int index) {
     time_t rawtime;
     struct tm * timeinfo;
     time(&rawtime);
     timeinfo = localtime(&rawtime);
     char month[BUFSIZ];
-    month_to_string(month, timeinfo->tm_mon);
-    sprintf(datetime, "[%d/%s/%d:%d:%d:%d %s]", timeinfo->tm_mday + log_index,
+    month_to_stroka(month, timeinfo->tm_mon);
+    sprintf(date, "[%d/%s/%d:%d:%d:%d %s]", timeinfo->tm_mday + index,
             month, timeinfo->tm_year + 1900,
             timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec, timeinfo->tm_zone);
 }
 
-int random_number(int min_num, int max_num) {
-    int result = 0, low_num = 0, hi_num = 0;
-    if (min_num < max_num) {
-        low_num = min_num;
-        hi_num = max_num + 1;
+int random_ch(int min, int max) {
+    int res = 0, start = 0, end = 0;
+    if (min < max) {
+        start = min;
+        end = max + 1;
     } else {
-        low_num = max_num + 1;
-        hi_num = min_num;
+        start = max + 1;
+        end = min;
     }
-    result = (rand() % (hi_num - low_num)) + low_num;
-    return result;
+    res = (rand() % (end - start)) + start;
+    return res;
 }
 
-void create_random_ip(char *ip_string) {
-    int d1 = random_number(0, 255);
-    int d2 = random_number(0, 255);
-    int d3 = random_number(0, 255);
-    int d4 = random_number(0, 255);
-    sprintf(ip_string, "%d.%d.%d.%d", d1, d2, d3, d4);
+void create_ip(char *ip) {
+    int ch1 = random_ch(0, 255);
+    int ch2 = random_ch(0, 255);
+    int ch3 = random_ch(0, 255);
+    int ch4 = random_ch(0, 255);
+    sprintf(ip, "%d.%d.%d.%d", ch1, ch2, ch3, ch4);
 }
 
-int get_random_status() {
-    int index = random_number(0, 9);
-    return status_codes[index];
+int gen_status() {
+    int ch = random_ch(0, 9);
+    return status_codes[ch];
 }
 
-void get_random_method(char *method) {
-    int method_number = random_number(0, 4);
-    if (method_number == 0) {
+void choose_method(char *method) {
+    int method_num = random_ch(0, 4);
+    if (method_num == 0) {
         sprintf(method, "%s", "GET");
-    } else if (method_number == 1) {
+    } else if (method_num == 1) {
         sprintf(method, "%s", "POST");
-    } else if (method_number == 2) {
+    } else if (method_num == 2) {
         sprintf(method, "%s", "PUT");
-    } else if (method_number == 3) {
+    } else if (method_num == 3) {
         sprintf(method, "%s", "PATCH");
-    } else if (method_number == 4) {
+    } else if (method_num == 4) {
         sprintf(method, "%s", "DELETE");
     }
 }
 
-void create_random_url(char *url) {
-    int url_index = random_number(0, 99);
-    FILE *file = fopen("urls.txt", "r");
+void create_url(char *url) {
+    int k_url = random_ch(0, 99);
+    FILE *file = fopen("url.txt", "r");
     int i = 0;
-    char file_string[BUFSIZ];
-    while (NULL != fgets(file_string, BUFSIZ, file)) {
-        if (i == url_index) {
-            file_string[strcspn(file_string, "\n")] = 0;
-            sprintf(url, "%s", file_string);
+    char file_stroka[BUFSIZ];
+    while (NULL != fgets(file_stroka, BUFSIZ, file)) {
+        if (i == k_url) {
+            file_stroka[strcspn(file_stroka, "\n")] = 0;
+            sprintf(url, "%s", file_stroka);
             break;
         }
-        i++;
+        ++i;
     }
     fclose(file);
 }
 
-void create_random_useragent(char *useragent) {
-    int useragent_index = random_number(0, 199);
-    FILE *file = fopen("agents.txt", "r");
+void create_agent(char *agent) {
+    int useragent_index = random_ch(0, 199);
+    FILE *file = fopen("agent.txt", "r");
     int i = 0;
-    char file_string[BUFSIZ];
-    while (NULL != fgets(file_string, BUFSIZ, file)) {
+    char file_stroka[BUFSIZ];
+    while (NULL != fgets(file_stroka, BUFSIZ, file)) {
         if (i == useragent_index) {
-            file_string[strcspn(file_string, "\n")] = 0;
-            sprintf(useragent, "%s", file_string);
+            file_stroka[strcspn(file_stroka, "\n")] = 0;
+            sprintf(agent, "%s", file_stroka);
             break;
         }
-        i++;
+        ++i;
     }
     fclose(file);
 }
 
-void month_to_string(char *string, int index) {
-    if (index == 0) {
-        sprintf(string, "%s", "Jan");
-    } else if (index == 1) {
-        sprintf(string, "%s", "Feb");
-    } else if (index == 2) {
-        sprintf(string, "%s", "Mar");
-    } else if (index == 3) {
-        sprintf(string, "%s", "Apr");
-    } else if (index == 4) {
-        sprintf(string, "%s", "May");
-    } else if (index == 5) {
-        sprintf(string, "%s", "June");
-    } else if (index == 6) {
-        sprintf(string, "%s", "July");
-    } else if (index == 7) {
-        sprintf(string, "%s", "Aug");
-    } else if (index == 8) {
-        sprintf(string, "%s", "Sept");
-    } else if (index == 9) {
-        sprintf(string, "%s", "Oct");
-    } else if (index == 10) {
-        sprintf(string, "%s", "Nov");
-    } else if (index == 11) {
-        sprintf(string, "%s", "Dec");
+void month_to_stroka(char *stroka, int check) {
+    if (check == 0) {
+        sprintf(stroka, "%s", "Jan");
+    } else if (check == 1) {
+        sprintf(stroka, "%s", "Feb");
+    } else if (check == 2) {
+        sprintf(stroka, "%s", "Mar");
+    } else if (check == 3) {
+        sprintf(stroka, "%s", "Apr");
+    } else if (check == 4) {
+        sprintf(stroka, "%s", "May");
+    } else if (check == 5) {
+        sprintf(stroka, "%s", "June");
+    } else if (check == 6) {
+        sprintf(stroka, "%s", "July");
+    } else if (check == 7) {
+        sprintf(stroka, "%s", "Aug");
+    } else if (check == 8) {
+        sprintf(stroka, "%s", "Sept");
+    } else if (check == 9) {
+        sprintf(stroka, "%s", "Oct");
+    } else if (check == 10) {
+        sprintf(stroka, "%s", "Nov");
+    } else if (check == 11) {
+        sprintf(stroka, "%s", "Dec");
     }
 }
